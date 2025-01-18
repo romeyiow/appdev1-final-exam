@@ -7,8 +7,9 @@ function TodoForm() {
 
     const handleAddTodo = () => {
         addTodo({
+            userId: Date.now(),
             id: Date.now(),
-            text: newTodo,
+            title: newTodo,
             completed: false,
         });
         setNewTodo("");
@@ -22,6 +23,8 @@ function TodoForm() {
                     value={newTodo}
                     onChange={(e) => setNewTodo(e.target.value)}
                     placeholder="Add a new todo"
+                    className="p-2 m-4"
+
                 />
                 <button onClick={handleAddTodo}>Add Todo</button>
             </div>

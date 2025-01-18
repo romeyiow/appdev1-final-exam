@@ -1,37 +1,40 @@
-// import React, { createContext, useState, useEffect } from "react"
-// src/TodoContext.jsx
-import React, { createContext, useState, useContext } from 'react';
 
-const fetchTodos = async () => {
-    try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/todos');
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`)
-        }
-        const data = await response.json();
-        console.log(data);
-        return data;
-
-    } catch (error) {
-        console.error('Error fetching data:', error)
-    }
-}
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 
-// Create a context for the Todo list
 const TodoContext = createContext();
 
-// TodoProvider component to provide the context to children
 export function TodoProvider({ children }) {
-    // Use state to store the todos
-    const [todos, setTodos] = useState([]);
 
-    // Function to add a new todo
+    useEffect(() => {
+        const fetchTodos = async () => {
+            console.log('fetching');
+            try {
+                const response = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=10');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log(data);
+                setTodos(data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchTodos();
+    }, []);
+
+    const [todos, setTodos] = useState();
+    const [loading, setLoading] = useState(true)
+
+
     const addTodo = (todo) => {
         setTodos((prevTodos) => [...prevTodos, todo]);
     };
 
-    // Function to toggle the completion state of a todo
+
     const toggleTodo = (id) => {
         setTodos((prevTodos) =>
             prevTodos.map((todo) =>
@@ -40,13 +43,13 @@ export function TodoProvider({ children }) {
         );
     };
 
-    // Function to delete a todo by id
+
     const deleteTodo = (id) => {
         setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
     };
 
     return (
-        <TodoContext.Provider value={{ todos, addTodo, toggleTodo, deleteTodo }}>
+        <TodoContext.Provider value={{ loading, todos, addTodo, toggleTodo, deleteTodo }}>
             {children}
         </TodoContext.Provider>
     );
